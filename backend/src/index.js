@@ -17,6 +17,3 @@ connectDB()
     console.log("DB connection failed", error.message);
   });
 
-app.get("/",(req,res)=>{
-    res.send("Server running")
-});

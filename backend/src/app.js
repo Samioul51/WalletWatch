@@ -35,6 +35,10 @@ app.use("/api", summaryRoutes);
 
 // AI route
 
-app.use("/api", aiRoutes)
+app.use("/api", aiRoutes);
+
+app.get("/",(req,res)=>{
+	res.send("Server running")
+});
 
 export default app;
