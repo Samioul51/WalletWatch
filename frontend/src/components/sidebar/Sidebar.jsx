@@ -13,6 +13,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { NavLink, Outlet } from "react-router";
+import { useNavigate } from "react-router";
 import {
 	Activity,
 	BanknoteArrowDown,
@@ -26,6 +27,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import { useState } from "react";
 import { useRef } from "react";
+import { toast } from "sonner";
 import { formatName } from "../../utils/formatting/formatting";
 
 const drawerWidth = 240;
@@ -128,6 +130,7 @@ const menuItems = [
 const Sidebar = ({ userData, logout }) => {
 	const theme = useTheme();
 	const [open, setOpen] = useState(false);
+	const navigate = useNavigate();
 	
     const logoutRef = useRef(null);
 
@@ -417,7 +420,7 @@ const Sidebar = ({ userData, logout }) => {
 
 								<ul
 									tabIndex={0}
-									className="dropdown-content menu z-[9999] mb-2 ml-2 w-56 rounded-2xl border border-gray-200 bg-white p-2 text-black shadow-2xl"
+									className="dropdown-content menu z-9999 mb-2 ml-2 w-56 rounded-2xl border border-gray-200 bg-white p-2 text-black shadow-2xl"
 								>
 									<li>
 										<NavLink to="/dashboard/my-profile">
