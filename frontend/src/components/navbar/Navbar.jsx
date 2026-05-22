@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Menu, Wallet, X } from "lucide-react";
 import { NavLink, useNavigate } from "react-router";
 import { useRef } from "react";
+import { useEffect } from "react";
 
 const Navbar = () => {
 	const [isOpen, setIsOpen] = useState(false);
