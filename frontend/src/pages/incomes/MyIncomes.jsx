@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import Pagination from "@mui/material/Pagination";
 import CardSkeleton from "../../components/cardSkeleton/CardSkeleton";
+import { toLocalDateRange } from "../../utils/time/toLocalDateRange.js";
 
 // Income validation schema
 
@@ -61,8 +62,12 @@ const MyIncomes = () => {
 						limit,
 						...(searchTerm && { search: searchTerm }),
 						...(source && { source }),
-						...(startDate && { startDate }),
-						...(endDate && { endDate }),
+						...(startDate && {
+							startDate: toLocalDateRange(startDate),
+						}),
+						...(endDate && {
+							endDate: toLocalDateRange(endDate, true),
+						}),
 					},
 				});
 

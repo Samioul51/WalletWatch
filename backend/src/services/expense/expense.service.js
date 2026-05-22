@@ -1,4 +1,5 @@
 import { Expense } from "../../models/expense/expense.model.js";
+import { buildDateFilter } from "../../utils/buildDateFilter.js";
 
 // Expense creation
 
@@ -123,17 +124,10 @@ export const getExpensesService = async ({
 			$options: "i",
 		};
 
-	if (startDate || endDate) {
-		query.createdAt = {};
+	const createdAt = buildDateFilter(startDate, endDate);
 
-		if (startDate) query.createdAt.$gte = new Date(startDate);
-
-		if (endDate) {
-			const end = new Date(endDate);
-			end.setUTCHours(23, 59, 59, 999);
-			query.createdAt.$lte = end;
-		}
-	}
+	if (createdAt)
+		query.createdAt = createdAt;
 
 	const pageNumber = Number(page);
 	const limitNumber = Number(limit);
