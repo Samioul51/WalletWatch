@@ -128,7 +128,11 @@ export const getExpensesService = async ({
 
 		if (startDate) query.createdAt.$gte = new Date(startDate);
 
-		if (endDate) query.createdAt.$lte = new Date(endDate);
+		if (endDate) {
+			const end = new Date(endDate);
+			end.setUTCHours(23, 59, 59, 999);
+			query.createdAt.$lte = end;
+		}
 	}
 
 	const pageNumber = Number(page);

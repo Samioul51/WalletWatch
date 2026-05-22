@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../../providers/AuthProvider/AuthProvider";
 import axiosSecure from "../../utils/axios/axioshelper";
-import { Search } from "lucide-react";
+import { Search, ChevronDown } from "lucide-react";
 import { IoMdCreate } from "react-icons/io";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -44,6 +44,9 @@ const MyIncomes = () => {
 	const [incomes, setIncomes] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [searchTerm, setSearchTerm] = useState("");
+	const [source, setSource] = useState("");
+	const [startDate, setStartDate] = useState("");
+	const [endDate, setEndDate] = useState("");
 	const [page, setPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
 	const limit = 10;
@@ -57,6 +60,9 @@ const MyIncomes = () => {
 						page,
 						limit,
 						...(searchTerm && { search: searchTerm }),
+						...(source && { source }),
+						...(startDate && { startDate }),
+						...(endDate && { endDate }),
 					},
 				});
 
@@ -72,7 +78,7 @@ const MyIncomes = () => {
 		};
 
 		if (userData?.email) fetchIncomes();
-	}, [userData?.email, page, searchTerm]);
+	}, [userData?.email, page, searchTerm, source, startDate, endDate]);
 
 	// Add income related
 
@@ -214,24 +220,81 @@ const MyIncomes = () => {
 				</p>
 			</div>
 
-			{/* Add button and search bar */}
+			{/* Filters and Add button */}
 
-			<div className="w-full flex justify-between items-center gap-5 mb-10">
-				<div className="w-full flex flex-2 items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm focus-within:ring-2 focus-within:ring-black transition-all">
-					<Search className="w-4 h-4 text-gray-400" />
-					<input
-						type="text"
-						value={searchTerm}
-						onChange={(e) => {
-							setSearchTerm(e.target.value);
-							setPage(1);
-						}}
-						placeholder="Search income"
-						className="w-full outline-none text-sm text-gray-700 placeholder-gray-400"
-					/>
+			<div className="w-full flex flex-col md:flex-row justify-between items-end gap-5 mb-10">
+				<div className="w-full flex-1 flex flex-col gap-2">
+					<span className="text-sm font-semibold text-gray-600">Search</span>
+					<div className="w-full flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-[9px] shadow-sm focus-within:ring-2 focus-within:ring-black transition-all">
+						<Search className="w-4 h-4 text-gray-400" />
+						<input
+							type="text"
+							value={searchTerm}
+							onChange={(e) => {
+								setSearchTerm(e.target.value);
+								setPage(1);
+							}}
+							placeholder="Search income"
+							className="w-full outline-none text-sm text-gray-700 placeholder-gray-400 bg-transparent"
+						/>
+					</div>
 				</div>
+
+				<div className="w-full md:w-48 flex flex-col gap-2">
+					<span className="text-sm font-semibold text-gray-600">Source</span>
+					<div className="relative w-full">
+						<select
+							value={source}
+							onChange={(e) => {
+								setSource(e.target.value);
+								setPage(1);
+							}}
+							className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-black transition-all text-gray-700 shadow-sm appearance-none cursor-pointer pr-10"
+						>
+							<option value="">All Sources</option>
+							<option value="Salary">Salary</option>
+							<option value="Freelance">Freelance</option>
+							<option value="Business">Business</option>
+							<option value="Gift">Gift</option>
+							<option value="Others">Others</option>
+						</select>
+						<div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+							<ChevronDown className="w-4 h-4" />
+						</div>
+					</div>
+				</div>
+
+				<div className="w-full flex-1 flex items-center gap-3">
+					<div className="flex-1 flex flex-col gap-2">
+						<span className="text-sm font-semibold text-gray-600">From Date</span>
+						<input
+							type="date"
+							value={startDate}
+							max={endDate || undefined}
+							onChange={(e) => {
+								setStartDate(e.target.value);
+								setPage(1);
+							}}
+							className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-black transition-all text-gray-700 shadow-sm"
+						/>
+					</div>
+					<div className="flex-1 flex flex-col gap-2">
+						<span className="text-sm font-semibold text-gray-600">To Date</span>
+						<input
+							type="date"
+							value={endDate}
+							min={startDate || undefined}
+							onChange={(e) => {
+								setEndDate(e.target.value);
+								setPage(1);
+							}}
+							className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-black transition-all text-gray-700 shadow-sm"
+						/>
+					</div>
+				</div>
+
 				<button
-					className="px-5 py-1 flex gap-2 rounded-lg justify-center font-sm cursor-pointer text-lg items-center bg-black text-white border-white hover:bg-white hover:text-black hover:border-black border transition-colors duration-500"
+					className="px-6 py-2 flex gap-2 rounded-lg justify-center font-sm cursor-pointer text-lg items-center bg-black text-white border-white hover:bg-white hover:text-black hover:border-black border transition-colors duration-500 h-[42px]"
 					onClick={openIncomeCreateModal}
 				>
 					<IoMdCreate /> Add
@@ -253,8 +316,8 @@ const MyIncomes = () => {
 					</div>
 				) : (
 					incomes.map((income) => (
-						<div className="w-full rounded-lg border border-gray-100 bg-white p-5 shadow-lg transition-all duration-300 hover:-translate-y-1">
-							<div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+						<div key={income._id} className="w-full rounded-lg border border-gray-100 bg-white p-5 shadow-lg transition-all duration-300 hover:-translate-y-1">
+							<div className="flex flex-col gap-4 sm:flex-row sm:items-stretch sm:justify-between">
 								<div className="flex flex-col gap-2">
 									<div>
 										<p className="text-lg font-bold text-black">
@@ -271,26 +334,35 @@ const MyIncomes = () => {
 									</p>
 								</div>
 
-								<div className="flex gap-2">
-									<button
-										type="button"
-										className="btn btn-sm bg-black text-white border-white hover:bg-white hover:text-black hover:border-black border transition-colors duration-500"
-										onClick={() =>
-											openIncomeEditModal(income)
-										}
-									>
-										Edit
-									</button>
+								<div className="flex flex-col justify-between items-end h-full gap-2 min-h-[90px]">
+									<div className="flex gap-2">
+										<button
+											type="button"
+											className="btn btn-sm bg-black text-white border-white hover:bg-white hover:text-black hover:border-black border transition-colors duration-500"
+											onClick={() =>
+												openIncomeEditModal(income)
+											}
+										>
+											Edit
+										</button>
 
-									<button
-										type="button"
-										className="btn btn-sm bg-red-500 text-white border-red-500 hover:bg-white hover:text-red-500 transition-colors duration-500"
-										onClick={() =>
-											openDeleteIncomeModal(income._id)
-										}
-									>
-										Delete
-									</button>
+										<button
+											type="button"
+											className="btn btn-sm bg-red-500 text-white border-red-500 hover:bg-white hover:text-red-500 transition-colors duration-500"
+											onClick={() =>
+												openDeleteIncomeModal(income._id)
+											}
+										>
+											Delete
+										</button>
+									</div>
+									<p className="text-xs font-medium text-gray-400">
+										{new Date(income.createdAt).toLocaleDateString('en-GB', {
+											day: 'numeric',
+											month: 'short',
+											year: 'numeric'
+										})}
+									</p>
 								</div>
 							</div>
 						</div>
