@@ -7,13 +7,24 @@ import app from "./app.js";
 
 const port = process.env.PORT || 3000;
 
-connectDB()
-  .then(() => {
-    app.listen(port, () => {
-      console.log(`Server running on ${port}`);
-    });
-  })
-  .catch((error) => {
-    console.log("DB connection failed", error.message);
-  });
+let isConnected = false;
 
+const dbConnection = async () => {
+	if (isConnected) 
+		return;
+
+	await connectDB();
+	isConnected = true;
+};
+
+export default async function handler(req, res) {
+	try {
+		await dbConnection();
+		return app(req, res);
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: "Server initialization failed",
+		});
+	}
+}
