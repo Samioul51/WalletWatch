@@ -74,7 +74,6 @@ WalletWatch is a comprehensive full stack web application designed to help users
 ### Step 1: Clone the Repository
 ```bash
 git clone <repository-url>
-cd a_k_m_samioul_islam
 ```
 
 ### Step 2: Backend Setup
